@@ -7,14 +7,13 @@
 
 using namespace std;
 
-const Uint32 fps = 60; //Set speed in fps (frames per second)
-const Uint32 minframetime = 1000 / fps;
-
 class SDL_helper
 {
 public:
     SDL_Window* window;
     SDL_Renderer* renderer;
+    Uint32 fps = 60; //Set speed in fps (frames per second)
+    Uint32 minframetime = 1000 / fps;
     Uint32 frametime;
     bool running = true;
 
