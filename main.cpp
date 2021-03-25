@@ -8,6 +8,7 @@ SDL_helper sdlHelper;
 
 int x = 100;
 int y = 100;
+int r = 0;
 
 void SDL_helper::update() {
     sdlHelper.updatePriorities();
@@ -25,9 +26,11 @@ void SDL_helper::update() {
         y -= 5;
     }
 
-    sdlHelper.drawLine(x, y, 20, 40, 3, 0, 0, 0, 255);
-    sdlHelper.drawImage(x, y, 200, 200, "image.bmp");
+    r++;
+
+    sdlHelper.drawImageEx(x, y, 200, 200, r, 100, 50, "image.bmp");
     sdlHelper.drawRect(100, 100, 100, 100, 10, 0, 0, 0, 255);
+    sdlHelper.drawLine(x + 100, y + 50, 20, 40, 3, 0, 0, 0, 255);
 
     sdlHelper.render();
     sdlHelper.correctFramerate();

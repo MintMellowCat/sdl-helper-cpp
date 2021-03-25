@@ -191,6 +191,25 @@ public:
         SDL_RenderCopy(renderer, texture, NULL, &rect);
     }
 
+    void drawImageEx(int x, int y, int w, int h, float a, int cx, int cy, const char* img) {
+        SDL_Texture* texture = NULL;
+        SDL_Surface* surface = NULL;
+        surface = SDL_LoadBMP(img);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+        SDL_Rect rect;
+        rect.x = x;
+        rect.y = y;
+        rect.w = w;
+        rect.h = h;
+
+        SDL_Point cRect;
+        cRect.x = cx;
+        cRect.y = cy;
+
+        SDL_RenderCopyEx(renderer, texture, NULL, &rect, a, &cRect, SDL_FLIP_NONE);
+    }
+
     void render() {
         SDL_RenderPresent(renderer);
     }
