@@ -176,10 +176,16 @@ public:
         }
     }
 
-    void drawImage(int x, int y, int w, int h, const char* img) {
+    void drawImage(int x, int y, int w, int h, const char* img, bool t, int r, int g, int b) {
         SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
         surface = SDL_LoadBMP(img);
+
+        if (t) {
+            Uint32 colorKey = SDL_MapRGB(surface->format, r, g, b);
+            SDL_SetColorKey(surface, SDL_TRUE, colorKey);
+        }
+
         texture = SDL_CreateTextureFromSurface(renderer, surface);
 
         SDL_Rect rect;
@@ -191,10 +197,16 @@ public:
         SDL_RenderCopy(renderer, texture, NULL, &rect);
     }
 
-    void drawImageEx(int x, int y, int w, int h, float a, int cx, int cy, const char* img) {
+    void drawImageEx(int x, int y, int w, int h, float a, int cx, int cy, const char* img, bool t, int r, int g, int b) {
         SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
         surface = SDL_LoadBMP(img);
+
+        if (t) {
+            Uint32 colorKey = SDL_MapRGB(surface->format, r, g, b);
+            SDL_SetColorKey(surface, SDL_TRUE, colorKey);
+        }
+
         texture = SDL_CreateTextureFromSurface(renderer, surface);
 
         SDL_Rect rect;

@@ -28,9 +28,9 @@ void SDL_helper::update() {
 
     r++;
 
-    sdlHelper.drawImageEx(x, y, 200, 200, r, 100, 50, "image.bmp");
     sdlHelper.drawRect(100, 100, 100, 100, 10, 0, 0, 0, 255);
     sdlHelper.drawLine(x + 100, y + 50, 20, 40, 3, 0, 0, 0, 255);
+    sdlHelper.drawImageEx(x, y, 200, 200, r, 100, 50, "image.bmp", true, 255, 255, 255);
 
     sdlHelper.render();
     sdlHelper.correctFramerate();
