@@ -6,31 +6,40 @@ using namespace std;
 
 SDL_helper sdlHelper;
 
-int x = 100;
-int y = 100;
-int r = 0;
+float x = 100;
+float y = 100;
+float xs = 0;
+float ys = 0;
+float r = 0;
+float g = 0.5;
+float gs = 0;
 
 void SDL_helper::update() {
     sdlHelper.updatePriorities();
 
     if (sdlHelper.keyHeld(SDLK_RIGHT)) {
-        x += 5;
+        xs = 10;
+    } else if (sdlHelper.keyHeld(SDLK_LEFT)) {
+        xs = -10;
+    } else {
+        xs = 0;
     }
-    if (sdlHelper.keyHeld(SDLK_LEFT)) {
-        x -= 5;
-    }
-    if (sdlHelper.keyHeld(SDLK_DOWN)) {
-        y += 5;
-    }
-    if (sdlHelper.keyHeld(SDLK_UP)) {
-        y -= 5;
+    if (sdlHelper.keyHeld(SDLK_SPACE)) {
+        ys = -20;
+    } else {
+        ys = 0;
     }
 
-    r++;
+    x += xs;
+    gs += g;
+    y += gs + ys;
 
-    sdlHelper.drawRect(100, 100, 100, 100, 10, 0, 0, 0, 255);
-    sdlHelper.drawLine(x + 100, y + 50, 20, 40, 3, 0, 0, 0, 255);
-    sdlHelper.drawImageEx(x, y, 200, 200, r, 100, 50, "image.bmp", true, 255, 255, 255);
+    if (y > 1080 - 160) {
+        gs = 0;
+        y = 1080 - 160;
+    }
+
+    sdlHelper.drawImage(x, y, 200, 200, "image.bmp", true, 255, 255, 255);
 
     sdlHelper.render();
     sdlHelper.correctFramerate();
