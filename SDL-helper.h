@@ -95,9 +95,7 @@ public:
     bool keyDown(SDL_Keycode key) {
         if (poll)
         {
-            switch (event.type)
-            {
-            case SDL_KEYDOWN:
+            if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == key) {
                     return true;
                 } else {
@@ -112,9 +110,7 @@ public:
     bool keyUp(SDL_Keycode key) {
         if (poll)
         {
-            switch (event.type)
-            {
-            case SDL_KEYUP:
+            if (event.type == SDL_KEYUP) {
                 if (event.key.keysym.sym == key) {
                     return true;
                 } else {
@@ -141,9 +137,7 @@ public:
     bool mouseDown(int button) {
         if (poll)
         {
-            switch (event.type)
-            {
-            case SDL_MOUSEBUTTONDOWN:
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
                 if (event.button.button == button) {
                     return true;
                 } else {
@@ -158,9 +152,7 @@ public:
     bool mouseUp(int button) {
         if (poll)
         {
-            switch (event.type)
-            {
-            case SDL_MOUSEBUTTONUP:
+            if (event.type == SDL_MOUSEBUTTONUP) {
                 if (event.button.button == button) {
                     return true;
                 } else {
