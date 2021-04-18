@@ -24,15 +24,14 @@ void SDL_helper::update() {
     } else {
         xs = 0;
     }
-    if (sdlHelper.keyHeld(SDLK_SPACE)) {
-        ys = -20;
-    } else {
-        ys = 0;
+    if (sdlHelper.keyDown(SDLK_SPACE)) {
+        gs = -20;
     }
 
     x += xs;
     gs += g;
     y += gs + ys;
+    ys = 0;
 
     if (y > 1080 - 160) {
         gs = 0;

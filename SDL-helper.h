@@ -15,6 +15,8 @@ public:
     Uint32 fps = 60; //Set speed in fps (frames per second)
     Uint32 minframetime = 1000 / fps;
     Uint32 frametime;
+    SDL_Event event;
+    int poll;
     bool running = true;
 
     void start() {
@@ -34,10 +36,9 @@ public:
 
     void updatePriorities() {
 
+        poll = SDL_PollEvent(&event);
         frametime = SDL_GetTicks(); //Get frame time
-
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //Set background color
-
         SDL_RenderClear(renderer); //Clear screen
 
         static bool fullScreen = true; //Is fullscreen
@@ -46,9 +47,7 @@ public:
         static int screenWidth = 1920;
         static int screenHeight = 1080;
 
-        SDL_Event event;
-
-        if (SDL_PollEvent(&event))
+        if (poll)
         {
             switch (event.type)
             {
@@ -92,9 +91,7 @@ public:
     }
 
     bool keyDown(SDL_Keycode key) {
-        SDL_Event event;
-
-        if (SDL_PollEvent(&event))
+        if (poll)
         {
             switch (event.type)
             {
@@ -111,9 +108,7 @@ public:
     }
 
     bool keyUp(SDL_Keycode key) {
-        SDL_Event event;
-
-        if (SDL_PollEvent(&event))
+        if (poll)
         {
             switch (event.type)
             {
