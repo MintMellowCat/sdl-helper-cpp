@@ -136,6 +136,44 @@ public:
         return 0;
     }
 
+    bool mouseDown(int button) {
+        if (poll)
+        {
+            switch (event.type)
+            {
+            case SDL_MOUSEBUTTONDOWN:
+                if (event.button.button == button) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    bool mouseUp(int button) {
+        if (poll)
+        {
+            switch (event.type)
+            {
+            case SDL_MOUSEBUTTONUP:
+                if (event.button.button == button) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    bool mouseHeld(int button) {
+        return SDL_GetMouseState(NULL, NULL)&button;
+    }
+
     void drawRect(int x, int y, int w, int h, int t, int r, int g, int b, int a) {
         drawLine(x, y, x + w, y, t, r, g, b, a);
         drawLine(x + w, y, x + w, y + w, t, r, g, b, a);

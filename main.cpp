@@ -21,16 +21,20 @@ void SDL_helper::update() {
         xs = 10;
     } else if (sdlHelper.keyHeld(SDLK_LEFT)) {
         xs = -10;
-    } else {
-        xs = 0;
     }
-    if (sdlHelper.keyDown(SDLK_SPACE)) {
-        gs = -20;
+    if (gs == 0 && y >= 1080 - 160) {
+        if (sdlHelper.keyDown(SDLK_SPACE)) {
+            gs = -20;
+        }
+        if (sdlHelper.mouseHeld(SDL_BUTTON_LEFT)) {
+            gs = -5;
+        }
     }
 
     x += xs;
     gs += g;
     y += gs + ys;
+    xs = 0;
     ys = 0;
 
     if (y > 1080 - 160) {
