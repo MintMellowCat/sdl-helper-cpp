@@ -18,6 +18,7 @@ public:
     SDL_Event event;
     int poll;
     bool running = true;
+    bool showCursor = true;
 
     void start() {
         window = SDL_CreateWindow("Game Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN); //Display window
@@ -26,6 +27,7 @@ public:
         SDL_Init(SDL_INIT_EVERYTHING);
         SDL_SetWindowFullscreen(window, 1);
         SDL_SetWindowResizable(window, SDL_TRUE);
+        SDL_ShowCursor(showCursor);
     }
 
     void updateLoop() {
@@ -171,7 +173,24 @@ public:
     }
 
     bool mouseHeld(int button) {
+        SDL_PumpEvents();
         return SDL_GetMouseState(NULL, NULL)&button;
+    }
+
+    int mousePositionX() {
+        int x;
+        SDL_PumpEvents();
+        SDL_GetMouseState(&x, NULL);
+
+        return x;
+    }
+
+    int mousePositionY() {
+        int y;
+        SDL_PumpEvents();
+        SDL_GetMouseState(NULL, &y);
+
+        return y;
     }
 
     void drawRect(int x, int y, int w, int h, int t, int r, int g, int b, int a) {

@@ -8,6 +8,8 @@ SDL_helper sdlHelper;
 
 float x = 100;
 float y = 100;
+float mx;
+float my;
 float xs = 0;
 float ys = 0;
 float r = 0;
@@ -27,7 +29,7 @@ void SDL_helper::update() {
             gs = -20;
         }
         if (sdlHelper.mouseHeld(SDL_BUTTON_LEFT)) {
-            gs = -5;
+            gs = -10;
         }
     }
 
@@ -37,18 +39,23 @@ void SDL_helper::update() {
     xs = 0;
     ys = 0;
 
+    mx = sdlHelper.mousePositionX();
+    my = sdlHelper.mousePositionY();
+
     if (y > 1080 - 160) {
         gs = 0;
         y = 1080 - 160;
     }
 
     sdlHelper.drawImage(x, y, 200, 200, "image.bmp", true, 255, 255, 255);
+    sdlHelper.fillRect(mx - 10, my - 10, 20, 20, 0, 0, 0, 255);
 
     sdlHelper.render();
     sdlHelper.correctFramerate();
 }
 
 int main() {
+    sdlHelper.showCursor = false;
     sdlHelper.start();
     sdlHelper.updateLoop();
 
