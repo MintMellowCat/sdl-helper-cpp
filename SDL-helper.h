@@ -226,6 +226,12 @@ public:
         }
     }
 
+    void drawPolygon(int length, int x[], int y[], int t, int r, int g, int b, int a) {
+        for (int i = 0; i < length; i++) {
+            drawLine(x[i], y[i], x[(i + 1)%length], y[(i + 1)%length], t, r, g, b, a);
+        }
+    }
+
     void drawBMPImage(int x, int y, int w, int h, const char* img, bool t, int r, int g, int b) {
         SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
