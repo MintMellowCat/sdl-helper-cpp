@@ -27,9 +27,11 @@ void SDL_helper::update() {
         if (sdlHelper.keyDown(SDLK_SPACE)) {
             gs = -20;
         }
-        if (sdlHelper.mouseHeld(SDL_BUTTON_LEFT)) {
-            gs = -10;
-        }
+    }
+    if (sdlHelper.mouseDown(SDL_BUTTON_LEFT)) {
+        gs = 0;
+        x = sdlHelper.mousePositionX() - 100;
+        y = sdlHelper.mousePositionY() - 100;
     }
 
     x += xs;
