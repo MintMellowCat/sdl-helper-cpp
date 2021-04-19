@@ -1,4 +1,3 @@
-#define SDL_MAIN_HANDLED
 #include <iostream>
 #include "SDL-helper.h"
 
@@ -47,7 +46,7 @@ void SDL_helper::update() {
         y = 1080 - 160;
     }
 
-    sdlHelper.drawImage(x, y, 200, 200, "image.bmp", true, 255, 255, 255);
+    sdlHelper.drawBMPImage(x, y, 200, 200, "image.bmp", true, 255, 255, 255);
     sdlHelper.fillRect(mx - 10, my - 10, 20, 20, 0, 0, 0, 255);
 
     sdlHelper.render();

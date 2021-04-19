@@ -1,6 +1,7 @@
-#define PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117
 #define SDL_MAIN_HANDLED
+#define STB_IMAGE_IMPLEMENTATION
 #include <iostream>
+#include <string>
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <math.h>
@@ -207,6 +208,11 @@ public:
         fillRect(x - t / 2, y - t / 2, t, t, r, g, b, a);
     }
 
+    void drawPixel(int x, int y, int r, int g, int b, int a) {
+        SDL_SetRenderDrawColor(renderer, r, g, b, a);
+        SDL_RenderDrawPoint(renderer, x, y);
+    }
+
     void drawLine(int x1, int y1, int x2, int y2, int t, int r, int g, int b, int a) {
         int dx, dy;
         float quality;
@@ -220,7 +226,7 @@ public:
         }
     }
 
-    void drawImage(int x, int y, int w, int h, const char* img, bool t, int r, int g, int b) {
+    void drawBMPImage(int x, int y, int w, int h, const char* img, bool t, int r, int g, int b) {
         SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
         surface = SDL_LoadBMP(img);
@@ -241,7 +247,7 @@ public:
         SDL_RenderCopy(renderer, texture, NULL, &rect);
     }
 
-    void drawImageEx(int x, int y, int w, int h, float a, int cx, int cy, const char* img, bool t, int r, int g, int b) {
+    void drawBMPImageEx(int x, int y, int w, int h, float a, int cx, int cy, const char* img, bool t, int r, int g, int b) {
         SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
         surface = SDL_LoadBMP(img);
