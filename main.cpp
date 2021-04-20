@@ -5,6 +5,9 @@ using namespace std;
 
 SDL_helper sdlHelper;
 
+SDL_RendererFlip flip = SDL_FLIP_NONE;
+SDL_Texture* et;
+SDL_Texture* pt;
 float x = 100;
 float y = 100;
 float ex = 500;
@@ -25,8 +28,10 @@ void SDL_helper::update() {
 
     if (sdlHelper.keyHeld(SDLK_RIGHT)) {
         xs = 10;
+        flip = SDL_FLIP_NONE;
     } else if (sdlHelper.keyHeld(SDLK_LEFT)) {
         xs = -10;
+        flip = SDL_FLIP_HORIZONTAL;
     }
     if (gs == 0 && y >= 1080 - 160) {
         if (sdlHelper.keyDown(SDLK_SPACE)) {
@@ -63,13 +68,19 @@ void SDL_helper::update() {
         gs = 0;
         y = 1080 - 160;
     }
+    if (x < 0) {
+        x = 0;
+    }
+    if (x > 1920 - 200) {
+        x = 1920 - 200;
+    }
     if (ey > 1080 - 95) {
         egs = 0;
         ey = 1080 - 95;
     }
 
-    sdlHelper.drawBMPImage(x, y, 200, 200, "image.bmp", true, 255, 255, 255);
-    sdlHelper.drawImage(ex, ey, 100, 100, "image.png");
+    sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, pt);
+    sdlHelper.renderImage(ex, ey, 100, 100, et);
     sdlHelper.fillRect(mx - 10, my - 10, 20, 20, 0, 0, 0, 255);
 
     sdlHelper.render();
@@ -79,6 +90,8 @@ void SDL_helper::update() {
 int main() {
     sdlHelper.showCursor = false;
     sdlHelper.start();
+    et = sdlHelper.loadImage("image.png");
+    pt = sdlHelper.loadImage("image.bmp");
     sdlHelper.updateLoop();
 
 	return 0;

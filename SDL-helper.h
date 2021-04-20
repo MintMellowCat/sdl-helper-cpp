@@ -253,6 +253,31 @@ public:
         SDL_RenderCopy(renderer, texture, NULL, &rect);
     }
 
+    void drawBMPImageEx(int x, int y, int w, int h, SDL_RendererFlip f, float a, int cx, int cy, const char* img, bool t, int r, int g, int b) {
+        SDL_Texture* texture = NULL;
+        SDL_Surface* surface = NULL;
+        surface = SDL_LoadBMP(img);
+
+        if (t) {
+            Uint32 colorKey = SDL_MapRGB(surface->format, r, g, b);
+            SDL_SetColorKey(surface, SDL_TRUE, colorKey);
+        }
+
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+        SDL_Rect rect;
+        rect.x = x;
+        rect.y = y;
+        rect.w = w;
+        rect.h = h;
+
+        SDL_Point center;
+        center.x = cx;
+        center.y = cy;
+
+        SDL_RenderCopyEx(renderer, texture, NULL, &rect, a, &center, f);
+    }
+
     void drawImage(int x, int y, int w, int h, const char* img) {
         SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
@@ -272,12 +297,13 @@ public:
         rect.h = h;
 
         SDL_RenderCopy(renderer, texture, NULL, &rect);
+        stbi_image_free(data);
+        SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
-
     }
 
-    void loadImage(SDL_Texture *texture, const char* img)
-    {
+    void drawImageEx(int x, int y, int w, int h, SDL_RendererFlip f, float a, int cx, int cy, const char* img) {
+        SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
         int img_w, img_h, comp;
         unsigned char* data = stbi_load(img, &img_w, &img_h, &comp, STBI_rgb_alpha);
@@ -287,6 +313,53 @@ public:
 
         stbi_image_free(data);
         SDL_FreeSurface(surface);
+
+        SDL_Rect rect;
+        rect.x = x;
+        rect.y = y;
+        rect.w = w;
+        rect.h = h;
+
+        SDL_Point center;
+        center.x = cx;
+        center.y = cy;
+
+        SDL_RenderCopyEx(renderer, texture, NULL, &rect, a, &center, f);
+        stbi_image_free(data);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+    }
+
+    SDL_Texture* loadImage(const char* img)
+    {
+        SDL_Texture* texture = NULL;
+        SDL_Surface* surface = NULL;
+        int img_w, img_h, comp;
+        unsigned char* data = stbi_load(img, &img_w, &img_h, &comp, STBI_rgb_alpha);
+
+        surface = SDL_CreateRGBSurfaceFrom(data, img_w, img_h, 32, 4 * img_w, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        stbi_image_free(data);
+        SDL_FreeSurface(surface);
+
+        return texture;
+    }
+
+    SDL_Texture* loadBMPImage(const char* img, bool t, int r, int g, int b)
+    {
+        SDL_Texture* texture = NULL;
+        SDL_Surface* surface = NULL;
+        surface = SDL_LoadBMP(img);
+
+        if (t) {
+            Uint32 colorKey = SDL_MapRGB(surface->format, r, g, b);
+            SDL_SetColorKey(surface, SDL_TRUE, colorKey);
+        }
+
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+
+        return texture;
     }
 
     void renderImage(int x, int y, int w, int h, SDL_Texture *texture) {
@@ -297,6 +370,20 @@ public:
         rect.h = h;
 
         SDL_RenderCopy(renderer, texture, NULL, &rect);
+    }
+
+    void renderImageEx(int x, int y, int w, int h, SDL_RendererFlip f, float a, int cx, int cy, SDL_Texture *texture) {
+        SDL_Rect rect;
+        rect.x = x;
+        rect.y = y;
+        rect.w = w;
+        rect.h = h;
+
+        SDL_Point center;
+        center.x = cx;
+        center.y = cy;
+
+        SDL_RenderCopyEx(renderer, texture, NULL, &rect, a, &center, f);
     }
 
     void render() {
