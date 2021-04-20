@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <SDL2/SDL.h>
+#include <stb/stb_image.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -38,7 +39,6 @@ public:
     }
 
     void updatePriorities() {
-
         poll = SDL_PollEvent(&event);
         frametime = SDL_GetTicks(); //Get frame time
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //Set background color
@@ -253,17 +253,17 @@ public:
         SDL_RenderCopy(renderer, texture, NULL, &rect);
     }
 
-    void drawBMPImageEx(int x, int y, int w, int h, float a, int cx, int cy, const char* img, bool t, int r, int g, int b) {
+    void drawImage(int x, int y, int w, int h, const char* img) {
         SDL_Texture* texture = NULL;
         SDL_Surface* surface = NULL;
-        surface = SDL_LoadBMP(img);
+        int img_w, img_h, comp;
+        unsigned char* data = stbi_load(img, &img_w, &img_h, &comp, STBI_rgb_alpha);
 
-        if (t) {
-            Uint32 colorKey = SDL_MapRGB(surface->format, r, g, b);
-            SDL_SetColorKey(surface, SDL_TRUE, colorKey);
-        }
-
+        surface = SDL_CreateRGBSurfaceFrom(data, img_w, img_h, 32, 4 * img_w, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
         texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+        stbi_image_free(data);
+        SDL_FreeSurface(surface);
 
         SDL_Rect rect;
         rect.x = x;
@@ -271,11 +271,32 @@ public:
         rect.w = w;
         rect.h = h;
 
-        SDL_Point cRect;
-        cRect.x = cx;
-        cRect.y = cy;
+        SDL_RenderCopy(renderer, texture, NULL, &rect);
+        SDL_DestroyTexture(texture);
 
-        SDL_RenderCopyEx(renderer, texture, NULL, &rect, a, &cRect, SDL_FLIP_NONE);
+    }
+
+    void loadImage(SDL_Texture *texture, const char* img)
+    {
+        SDL_Surface* surface = NULL;
+        int img_w, img_h, comp;
+        unsigned char* data = stbi_load(img, &img_w, &img_h, &comp, STBI_rgb_alpha);
+
+        surface = SDL_CreateRGBSurfaceFrom(data, img_w, img_h, 32, 4 * img_w, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+        stbi_image_free(data);
+        SDL_FreeSurface(surface);
+    }
+
+    void renderImage(int x, int y, int w, int h, SDL_Texture *texture) {
+        SDL_Rect rect;
+        rect.x = x;
+        rect.y = y;
+        rect.w = w;
+        rect.h = h;
+
+        SDL_RenderCopy(renderer, texture, NULL, &rect);
     }
 
     void render() {
