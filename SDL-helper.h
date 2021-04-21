@@ -1,10 +1,13 @@
-#define SDL_MAIN_HANDLED
+#define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
+#define SDL_MAIN_HANDLED
 #include <iostream>
 #include <string>
 #include <SDL2/SDL.h>
 #include <stb/stb_image.h>
+#include <stb/stb_truetype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
 using namespace std;
@@ -386,6 +389,55 @@ public:
         SDL_RenderCopyEx(renderer, texture, NULL, &rect, a, &center, f);
     }
 
+    void drawText(int x, int y, int s, const char* dir, const char* txt, int r, int g, int b) {
+        SDL_Texture* texture = NULL;
+        SDL_Surface* surface = NULL;
+        stbtt_fontinfo font;
+        unsigned char* bitmap = 0;
+        FILE* file = fopen(dir, "rb");
+
+        if (!file) {
+            exit(1);
+        }
+
+        fseek(file, 0, SEEK_END);
+        int fSize = ftell(file);
+        rewind(file);
+        unsigned char ttfBuffer[fSize];
+        fread(ttfBuffer, 1, fSize, file);
+
+        stbtt_InitFont(&font, ttfBuffer, stbtt_GetFontOffsetForIndex(ttfBuffer, 0));
+        float scale = stbtt_ScaleForPixelHeight(&font, s);
+        int ascent, descent;
+        stbtt_GetFontVMetrics(&font, &ascent, &descent, 0);
+
+        int advance, x0, y0, w, h, xPos = 10, yPos = 10 + scale * ascent;
+
+        for (int ind = 0; txt[ind]; ind++) {
+            bitmap = stbtt_GetCodepointBitmap(&font, 0, stbtt_ScaleForPixelHeight(&font, s), txt[ind], &w, &h, 0, 0);
+            stbtt_GetCodepointHMetrics(&font, txt[ind], &advance, 0);
+            stbtt_GetCodepointBitmapBox(&font, txt[ind], scale, scale, &x0, &y0, 0, 0);
+
+            int xp = xPos, yp = yPos;
+
+            for (int j = 0; j < h; j++) {
+                for (int i = 0; i < w; i++) {
+                    if (bitmap[j * w + i]) {
+                        drawPixel(xp + x0 + x, yp + y0 + y, r, g, b, bitmap[j * w + i]);
+                    }
+                    xp++;
+                }
+                xp = xPos;
+                yp++;
+            }
+
+            stbtt_FreeBitmap(bitmap, 0);
+            if (!txt[ind + 1]) break;
+            xPos += scale * advance;
+        }
+
+    }
+
     void render() {
         SDL_RenderPresent(renderer);
     }
@@ -397,5 +449,4 @@ public:
     }
 
     void update();
-    
 };

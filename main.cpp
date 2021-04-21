@@ -81,6 +81,7 @@ void SDL_helper::update() {
 
     sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, pt);
     sdlHelper.renderImage(ex, ey, 100, 100, et);
+    sdlHelper.drawText(100, 100, 100, "Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", 255, 100, 100);
     sdlHelper.fillRect(mx - 10, my - 10, 20, 20, 0, 0, 0, 255);
 
     sdlHelper.render();
