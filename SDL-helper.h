@@ -119,6 +119,10 @@ public:
         }
     }
 
+    void setIcon(SDL_Surface* icon) {
+        SDL_SetWindowIcon(window, icon);
+    }
+
     bool keyDown(SDL_Keycode key) {
         bool down = false;
 
@@ -332,6 +336,18 @@ public:
         stbi_image_free(data);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
+    }
+
+    SDL_Surface* loadImageToSurface(const char* img)
+    {
+        SDL_Surface* surface = NULL;
+        int img_w, img_h, comp;
+        unsigned char* data = stbi_load(img, &img_w, &img_h, &comp, STBI_rgb_alpha);
+
+        surface = SDL_CreateRGBSurfaceFrom(data, img_w, img_h, 32, 4 * img_w, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+        stbi_image_free(data);
+
+        return surface;
     }
 
     SDL_Texture* loadImage(const char* img)

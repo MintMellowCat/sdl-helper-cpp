@@ -92,6 +92,7 @@ int main() {
     sdlHelper.start();
     et = sdlHelper.loadImage("image.png");
     pt = sdlHelper.loadImage("image.bmp");
+    sdlHelper.setIcon(sdlHelper.loadImageToSurface("image.png"));
     sdlHelper.updateLoop();
 
 	return 0;
