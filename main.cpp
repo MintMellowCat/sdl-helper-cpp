@@ -12,8 +12,8 @@ float x = 100;
 float y = 100;
 float ex = 500;
 float ey = 100;
-float mx;
-float my;
+int mx;
+int my;
 float xs = 0;
 float ys = 0;
 float exs = 0;
@@ -61,8 +61,7 @@ void SDL_helper::update() {
     exs = 0;
     eys = 0;
 
-    mx = sdlHelper.mousePositionX();
-    my = sdlHelper.mousePositionY();
+    sdlHelper.mousePotition(&mx, &my);
 
     if (y > 1080 - 160) {
         gs = 0;

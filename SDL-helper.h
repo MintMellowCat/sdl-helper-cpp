@@ -3,6 +3,7 @@
 #define SDL_MAIN_HANDLED
 #include <iostream>
 #include <string>
+#include <queue>
 #include <SDL2/SDL.h>
 #include <stb/stb_image.h>
 #include <stb/stb_truetype.h>
@@ -24,8 +25,14 @@ public:
     int poll;
     bool running = true;
     bool showCursor = true;
+    bool pKeysPressed[512];
+    bool keysPressed[512];
+    bool pMousesPressed[512];
+    bool mousesPressed[512];
 
     void start() {
+        ttfBuffer = NULL;
+
         window = SDL_CreateWindow("Game Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN); //Display window
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); //Create renderer
 
@@ -41,24 +48,17 @@ public:
         }
     }
 
-    void updatePriorities() {
-        poll = SDL_PollEvent(&event);
-        frametime = SDL_GetTicks(); //Get frame time
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //Set background color
-        SDL_RenderClear(renderer); //Clear screen
-
+    void readEvents() {
         static bool fullScreen = true; //Is fullscreen
         static int windowWidth = 1000;  //Get window width
         static int windowHeight = 700; //Get window height
         static int screenWidth = 1920;
         static int screenHeight = 1080;
 
-        if (poll)
+        switch(event.type)
         {
-            switch (event.type)
-            {
-
             case SDL_KEYDOWN:
+            {
                 if (event.key.keysym.sym == SDLK_F11) { //Detect if F11 is pressed
                     if (fullScreen) {
                         SDL_SetWindowFullscreen(window, 0);
@@ -77,100 +77,101 @@ public:
                         SDL_GetWindowSize(window, &screenWidth, &screenHeight);
                     }
                 }
+                keysPressed[event.key.keysym.scancode] = true;
             }
-
-            if (event.type == SDL_WINDOWEVENT) {
-                switch (event.window.event) {
-                case SDL_WINDOWEVENT_RESIZED:
-                    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+            break;
+            case SDL_MOUSEBUTTONDOWN: mousesPressed[event.button.button] = true; break;
+            case SDL_KEYUP: keysPressed[event.key.keysym.scancode] = false; break;
+            case SDL_MOUSEBUTTONUP: mousesPressed[event.button.button] = false; break;
+            case SDL_WINDOWEVENT:
+            {
+                switch (event.window.event) 
+                {
+                    case SDL_WINDOWEVENT_RESIZED: SDL_GetWindowSize(window, &windowWidth, &windowHeight); break;
                 }
             }
-
-            if (SDL_QUIT == event.type) //Detect if user presses the x button
+            break;
+            case SDL_QUIT:
             {
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
 
                 running = false;
             }
+            break;
+        }
+    }
+
+    void updatePriorities() {
+        frametime = SDL_GetTicks(); //Get frame time
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //Set background color
+        SDL_RenderClear(renderer); //Clear screen
+
+        for (int i = 0; i < 512; i++) {
+            pKeysPressed[i] = keysPressed[i];
+        }
+        for (int i = 0; i < 512; i++) {
+            pMousesPressed[i] = mousesPressed[i];
+        }
+
+        while (SDL_PollEvent(&event)) {
+            readEvents();
         }
     }
 
     bool keyDown(SDL_Keycode key) {
-        if (poll)
-        {
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == key) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        bool down = false;
+
+        if (!pKeysPressed[SDL_GetScancodeFromKey(key)] && keysPressed[SDL_GetScancodeFromKey(key)]) {
+            down = true;
         }
 
-        return 0;
+        return down;
     }
 
     bool keyUp(SDL_Keycode key) {
-        if (poll)
-        {
-            if (event.type == SDL_KEYUP) {
-                if (event.key.keysym.sym == key) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        bool up = false;
+
+        if (pKeysPressed[SDL_GetScancodeFromKey(key)] && !keysPressed[SDL_GetScancodeFromKey(key)]) {
+            up = true;
         }
 
-        return 0;
+        return up;
     }
 
     bool keyHeld(SDL_Keycode key) {
         const Uint8* state = SDL_GetKeyboardState(NULL); //Store key state in variable
-
-        if (state[SDL_GetScancodeFromKey(key)]) {
-            return true;
-        } else {
-            return false;
-        }
-
-        return 0;
+        return state[SDL_GetScancodeFromKey(key)];
     }
 
     bool mouseDown(int button) {
-        if (poll)
-        {
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
-                if (event.button.button == button) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        bool down = false;
+
+        if (!pMousesPressed[button] && mousesPressed[button]) {
+            down = true;
         }
 
-        return 0;
+        return down;
     }
 
     bool mouseUp(int button) {
-        if (poll)
-        {
-            if (event.type == SDL_MOUSEBUTTONUP) {
-                if (event.button.button == button) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        bool up = false;
+
+        if (pMousesPressed[button] && !mousesPressed[button]) {
+            up = true;
         }
 
-        return 0;
+        return up;
     }
 
     bool mouseHeld(int button) {
         SDL_PumpEvents();
         return SDL_GetMouseState(NULL, NULL)&button;
+    }
+
+    void mousePotition(int* x, int* y) {
+        SDL_PumpEvents();
+        SDL_GetMouseState(x, y);
     }
 
     int mousePositionX() {
@@ -390,21 +391,23 @@ public:
     }
 
     void drawText(int x, int y, int s, const char* dir, const char* txt, int r, int g, int b) {
-        SDL_Texture* texture = NULL;
-        SDL_Surface* surface = NULL;
         stbtt_fontinfo font;
         unsigned char* bitmap = 0;
-        FILE* file = fopen(dir, "rb");
+        if(ttfBuffer == NULL)
+        {
+            FILE* file = fopen(dir, "rb");
 
-        if (!file) {
-            exit(1);
+            if (!file) {
+                return;
+            }
+
+            fseek(file, 0, SEEK_END);
+            fSize = ftell(file);
+            rewind(file);
+            ttfBuffer = (unsigned char *) malloc(fSize);
+            fread(ttfBuffer, 1, fSize, file);
+            fclose(file);
         }
-
-        fseek(file, 0, SEEK_END);
-        int fSize = ftell(file);
-        rewind(file);
-        unsigned char ttfBuffer[fSize];
-        fread(ttfBuffer, 1, fSize, file);
 
         stbtt_InitFont(&font, ttfBuffer, stbtt_GetFontOffsetForIndex(ttfBuffer, 0));
         float scale = stbtt_ScaleForPixelHeight(&font, s);
@@ -449,4 +452,8 @@ public:
     }
 
     void update();
+
+private:
+    int fSize;
+    unsigned char *ttfBuffer;
 };
