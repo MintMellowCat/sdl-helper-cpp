@@ -8,12 +8,12 @@ SDL_helper sdlHelper;
 SDL_RendererFlip flip = SDL_FLIP_NONE;
 SDL_Texture* et;
 SDL_Texture* pt;
+int mx;
+int my;
 float x = 100;
 float y = 100;
 float ex = 500;
 float ey = 100;
-int mx;
-int my;
 float xs = 0;
 float ys = 0;
 float exs = 0;
@@ -29,19 +29,22 @@ void SDL_helper::update() {
     if (sdlHelper.keyHeld(SDLK_RIGHT)) {
         xs = 10;
         flip = SDL_FLIP_NONE;
-    } else if (sdlHelper.keyHeld(SDLK_LEFT)) {
+    }
+    if (sdlHelper.keyHeld(SDLK_LEFT)) {
         xs = -10;
         flip = SDL_FLIP_HORIZONTAL;
     }
     if (gs == 0 && y >= 1080 - 160) {
         if (sdlHelper.keyDown(SDLK_SPACE)) {
             gs = -20;
+            sdlHelper.playAudio("assets/jump.wav", 100, 100);
         }
     }
     if (sdlHelper.mouseDown(SDL_BUTTON_LEFT)) {
         gs = 0;
         x = sdlHelper.mousePositionX() - 100;
         y = sdlHelper.mousePositionY() - 100;
+        sdlHelper.playAudio("assets/click.wav", 100, 0);
     }
     if (x + 100 <= ex + 50) {
         exs = -5;
@@ -90,9 +93,9 @@ void SDL_helper::update() {
 int main() {
     sdlHelper.showCursor = false;
     sdlHelper.start();
-    et = sdlHelper.loadImage("image.png");
-    pt = sdlHelper.loadImage("image.bmp");
-    sdlHelper.setIcon(sdlHelper.loadImageToSurface("image.png"));
+    et = sdlHelper.loadImage("assets/image.png");
+    pt = sdlHelper.loadImage("assets/image.bmp");
+    sdlHelper.setIcon(sdlHelper.loadImageToSurface("assets/image.png"));
     sdlHelper.updateLoop();
 
 	return 0;

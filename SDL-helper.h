@@ -3,7 +3,7 @@
 #define SDL_MAIN_HANDLED
 #include <iostream>
 #include <string>
-#include <queue>
+#include <thread>
 #include <SDL2/SDL.h>
 #include <stb/stb_image.h>
 #include <stb/stb_truetype.h>
@@ -11,7 +11,11 @@
 #include <stdio.h>
 #include <math.h>
 
-using namespace std;
+static Uint8* audioPos;
+static Uint32 audioLen;
+std::thread audioThread;
+
+void playWav(const char *audioDir, int audioTime);
 
 class SDL_helper
 {
@@ -40,6 +44,9 @@ public:
         SDL_SetWindowFullscreen(window, 1);
         SDL_SetWindowResizable(window, SDL_TRUE);
         SDL_ShowCursor(showCursor);
+
+        SDL_AudioSpec audioSpec;
+        SDL_OpenAudioDevice(NULL, 0, &audioSpec, NULL, 0);
     }
 
     void updateLoop() {
@@ -457,6 +464,19 @@ public:
 
     }
 
+    void pauseAudio(int deviceId) {
+        SDL_PauseAudioDevice(deviceId, 1);
+    }
+
+    void startAudio(int deviceId) {
+        SDL_PauseAudioDevice(deviceId, 0);
+    }
+
+    void playAudio(const char *dir, int length, int pitch) {
+        audioThread = std::thread(std::ref(playWav), dir, length);
+        audioThread.detach();
+    }
+
     void render() {
         SDL_RenderPresent(renderer);
     }
@@ -471,5 +491,30 @@ public:
 
 private:
     int fSize;
-    unsigned char *ttfBuffer;
+    unsigned char* ttfBuffer;
+
 };
+
+void playWav(const char* audioDir, int audioTime) {
+    SDL_AudioSpec wavSpec;
+    Uint32 wavLength;
+    Uint8* wavBuffer;
+
+    if (SDL_LoadWAV(audioDir, &wavSpec, &wavBuffer, &wavLength) == NULL) {
+        return;
+    }
+
+    audioPos = wavBuffer;
+    audioLen = wavLength;
+
+    SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
+
+    SDL_QueueAudio(deviceId, wavBuffer, wavLength);
+    SDL_PauseAudioDevice(deviceId, 0);
+
+    SDL_Delay(audioTime);
+
+    SDL_PauseAudioDevice(deviceId, 1);
+    SDL_CloseAudioDevice(deviceId);
+    SDL_FreeWAV(wavBuffer);
+}

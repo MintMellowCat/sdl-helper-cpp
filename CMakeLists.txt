@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.18.4)
 project(sdl-example)
+
 find_package(SDL2 REQUIRED)
+find_package(Threads REQUIRED)
+
 include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${STB_INCLUDE_DIRS})
+
 add_executable(sdl-example main.cpp)
-target_link_libraries(sdl-example ${SDL2_LIBRARIES})
+
+target_link_libraries(sdl-example PRIVATE Threads::Threads SDL2)
 target_link_libraries(sdl-example ${STB_LIBRARIES})
