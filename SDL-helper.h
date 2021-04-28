@@ -14,8 +14,10 @@
 static Uint8* audioPos;
 static Uint32 audioLen;
 std::thread audioThread;
+std::thread audioUpdateThread;
 
 void playWav(const char *audioDir, int audioTime);
+void audioCallback(void* userdata, uint8_t* stream, int len);
 
 class SDL_helper
 {
@@ -52,6 +54,8 @@ public:
     void updateLoop() {
         while (running) {
             update();
+            audioUpdateThread = std::thread(audioUpdate);
+            audioUpdateThread.detach();
         }
     }
 
@@ -472,7 +476,7 @@ public:
         SDL_PauseAudioDevice(deviceId, 0);
     }
 
-    void playAudio(const char *dir, int length, int pitch) {
+    void playAudio(const char *dir, int length) {
         audioThread = std::thread(std::ref(playWav), dir, length);
         audioThread.detach();
     }
@@ -488,6 +492,7 @@ public:
     }
 
     void update();
+    static void audioUpdate();
 
 private:
     int fSize;

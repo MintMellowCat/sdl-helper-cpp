@@ -10,6 +10,7 @@ SDL_Texture* et;
 SDL_Texture* pt;
 int mx;
 int my;
+int n = 0;
 float x = 100;
 float y = 100;
 float ex = 500;
@@ -37,14 +38,14 @@ void SDL_helper::update() {
     if (gs == 0 && y >= 1080 - 160) {
         if (sdlHelper.keyDown(SDLK_SPACE)) {
             gs = -20;
-            sdlHelper.playAudio("assets/jump.wav", 100, 100);
+            sdlHelper.playAudio("assets/jump.wav", 100);
         }
     }
     if (sdlHelper.mouseDown(SDL_BUTTON_LEFT)) {
         gs = 0;
         x = sdlHelper.mousePositionX() - 100;
         y = sdlHelper.mousePositionY() - 100;
-        sdlHelper.playAudio("assets/click.wav", 100, 0);
+        sdlHelper.playAudio("assets/click.wav", 100);
     }
     if (x + 100 <= ex + 50) {
         exs = -5;
@@ -85,8 +86,15 @@ void SDL_helper::update() {
     sdlHelper.renderImage(ex, ey, 100, 100, et);
     sdlHelper.drawText(100, 100, 100, "Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", 255, 100, 100);
     sdlHelper.fillRect(mx - 10, my - 10, 20, 20, 0, 0, 0, 255);
-
     sdlHelper.render();
+}
+
+void SDL_helper::audioUpdate() {
+    if (n == 0) {
+        sdlHelper.playAudio("assets/music.wav", 3700);
+        n = 228;
+    }
+    n--;
     sdlHelper.correctFramerate();
 }
 
