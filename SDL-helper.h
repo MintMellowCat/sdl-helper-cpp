@@ -41,6 +41,7 @@ public:
 
         window = SDL_CreateWindow("Game Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN); //Display window
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); //Create renderer
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         SDL_Init(SDL_INIT_EVERYTHING);
         SDL_SetWindowFullscreen(window, 1);
