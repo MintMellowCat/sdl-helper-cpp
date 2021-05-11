@@ -1,18 +1,23 @@
 #include <iostream>
 #include "SDL-helper.h"
 
-using namespace std;
-
 SDL_helper sdlHelper;
 
 SDL_RendererFlip flip = SDL_FLIP_NONE;
 SDL_Texture* et;
-SDL_Texture* pt;
+SDL_Texture* f1;
+SDL_Texture* f2;
+SDL_Texture* f3;
+SDL_Texture* f4;
 int mx;
 int my;
 int n = 0;
-float x = 100;
-float y = 100;
+int t = 0;
+int f = 0;
+int x = 100;
+int y = 100;
+bool tc = false;
+bool m = false;
 float ex = 500;
 float ey = 100;
 float xs = 0;
@@ -27,25 +32,31 @@ float egs = 0;
 void SDL_helper::update() {
     sdlHelper.updatePriorities();
 
+    m = false;
+
     if (sdlHelper.keyHeld(SDLK_RIGHT)) {
         xs = 10;
         flip = SDL_FLIP_NONE;
+        m = true;
     }
     if (sdlHelper.keyHeld(SDLK_LEFT)) {
         xs = -10;
         flip = SDL_FLIP_HORIZONTAL;
+        m = true;
     }
-    if (gs == 0 && y >= 1080 - 160) {
+    if (gs == 0 && y >= 1080 - 180) {
         if (sdlHelper.keyDown(SDLK_SPACE)) {
             gs = -20;
             sdlHelper.playAudio("assets/jump.wav", 100);
         }
     }
     if (sdlHelper.mouseDown(SDL_BUTTON_LEFT)) {
-        gs = 0;
-        x = sdlHelper.mousePositionX() - 100;
-        y = sdlHelper.mousePositionY() - 100;
         sdlHelper.playAudio("assets/click.wav", 100);
+    }
+    if (sdlHelper.mouseHeld(SDL_BUTTON_LEFT)) {
+        if (isColliding(mx - 10, my - 10, 20, 20, 100, 110, 1640, 100)) {
+            tc = true;
+        }
     }
     if (x + 100 <= ex + 50) {
         exs = -5;
@@ -67,9 +78,9 @@ void SDL_helper::update() {
 
     sdlHelper.mousePotition(&mx, &my);
 
-    if (y > 1080 - 160) {
+    if (y > 1080 - 180) {
         gs = 0;
-        y = 1080 - 160;
+        y = 1080 - 179;
     }
     if (x < 0) {
         x = 0;
@@ -82,9 +93,35 @@ void SDL_helper::update() {
         ey = 1080 - 95;
     }
 
-    sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, pt);
+    if (m) {
+        if (t == 0) {
+            if (f == 3) {
+                f = 0;
+            } else {
+                f++;
+            }
+            t = 10;
+        }
+
+        t--;
+
+        if (f == 0) {
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f2);
+        } else if (f == 1) {
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f3);
+        } else if (f == 2) {
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f4);
+        } else if (f == 3) {
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f3);
+        }
+    } else {
+        t = 0;
+        sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f1);
+    }
+
     sdlHelper.renderImage(ex, ey, 100, 100, et);
-    sdlHelper.drawText(100, 100, 100, "Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", 255, 100, 100);
+    sdlHelper.drawText(95, 95, 100, "Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", 0, 0, 0, 30);
+    sdlHelper.drawText(100, 100, 100, "Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", tc ? 0 : 255, 100, tc ? 255 : 100, 255);
     sdlHelper.fillRect(mx - 10, my - 10, 20, 20, 0, 0, 0, 255);
     sdlHelper.render();
 }
@@ -101,9 +138,13 @@ void SDL_helper::audioUpdate() {
 int main() {
     sdlHelper.showCursor = false;
     sdlHelper.start();
+    sdlHelper.icon = sdlHelper.loadImageToSurface("assets/image.png");
     et = sdlHelper.loadImage("assets/image.png");
-    pt = sdlHelper.loadImage("assets/image.bmp");
-    sdlHelper.setIcon(sdlHelper.loadImageToSurface("assets/image.png"));
+    f1 = sdlHelper.loadImage("assets/stickman/frame-1.png");
+    f2 = sdlHelper.loadImage("assets/stickman/frame-2.png");
+    f3 = sdlHelper.loadImage("assets/stickman/frame-3.png");
+    f4 = sdlHelper.loadImage("assets/stickman/frame-4.png");
+    sdlHelper.updateIcon();
     sdlHelper.updateLoop();
 
 	return 0;

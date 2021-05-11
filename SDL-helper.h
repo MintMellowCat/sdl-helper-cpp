@@ -35,6 +35,7 @@ public:
     bool keysPressed[512];
     bool pMousesPressed[512];
     bool mousesPressed[512];
+    SDL_Surface* icon;
 
     void start() {
         ttfBuffer = NULL;
@@ -131,8 +132,14 @@ public:
         }
     }
 
-    void setIcon(SDL_Surface* icon) {
-        SDL_SetWindowIcon(window, icon);
+    bool updateIcon() {
+        if (icon != NULL) {
+            SDL_SetWindowIcon(window, icon);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     bool keyDown(SDL_Keycode key) {
@@ -208,9 +215,9 @@ public:
 
     void drawRect(int x, int y, int w, int h, int t, int r, int g, int b, int a) {
         drawLine(x, y, x + w, y, t, r, g, b, a);
-        drawLine(x + w, y, x + w, y + w, t, r, g, b, a);
-        drawLine(x + w, y + w, x, y + w, t, r, g, b, a);
-        drawLine(x, y + w, x, y, t, r, g, b, a);
+        drawLine(x + w, y, x + w, y + h, t, r, g, b, a);
+        drawLine(x + w, y + h, x, y + h, t, r, g, b, a);
+        drawLine(x, y + h, x, y, t, r, g, b, a);
     }
 
     void fillRect(int x, int y, int w, int h, int r, int g, int b, int a) {
@@ -418,7 +425,7 @@ public:
         SDL_RenderCopyEx(renderer, texture, NULL, &rect, a, &center, f);
     }
 
-    void drawText(int x, int y, int s, const char* dir, const char* txt, int r, int g, int b) {
+    void drawText(int x, int y, int s, const char* dir, const char* txt, int r, int g, int b, int a) {
         stbtt_fontinfo font;
         unsigned char* bitmap = 0;
         if(ttfBuffer == NULL)
@@ -454,7 +461,7 @@ public:
             for (int j = 0; j < h; j++) {
                 for (int i = 0; i < w; i++) {
                     if (bitmap[j * w + i]) {
-                        drawPixel(xp + x0 + x, yp + y0 + y, r, g, b, bitmap[j * w + i]);
+                        drawPixel(xp + x0 + x, yp + y0 + y, r, g, b, a);
                     }
                     xp++;
                 }
@@ -467,6 +474,12 @@ public:
             xPos += scale * advance;
         }
 
+    }
+
+    bool isColliding(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+        bool colliding = (x1 < (x2 + w2)) && (x2 < (x1 + w1)) && (y1 < (y2 + h2)) && (y2 < (y1 + h1));
+
+        return colliding;
     }
 
     void pauseAudio(int deviceId) {
@@ -517,7 +530,7 @@ void playWav(const char* audioDir, int audioTime) {
 
     SDL_QueueAudio(deviceId, wavBuffer, wavLength);
     SDL_PauseAudioDevice(deviceId, 0);
-
+ 
     SDL_Delay(audioTime);
 
     SDL_PauseAudioDevice(deviceId, 1);
