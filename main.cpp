@@ -5,10 +5,7 @@ SDL_helper sdlHelper;
 
 SDL_RendererFlip flip = SDL_FLIP_NONE;
 SDL_Texture* et;
-SDL_Texture* f1;
-SDL_Texture* f2;
-SDL_Texture* f3;
-SDL_Texture* f4;
+SDL_Texture* stickman[4];
 int mx;
 int my;
 int n = 0;
@@ -93,35 +90,34 @@ void SDL_helper::update() {
         ey = 1080 - 95;
     }
 
-    if (m) {
-        if (t == 0) {
-            if (f == 3) {
-                f = 0;
-            } else {
-                f++;
-            }
-            t = 10;
-        }
+    std::cout << elapsedTime << "\n";
 
-        t--;
+    if (m && gs == 0 && y >= 1080 - 180) {
+        if (sdlHelper.elapsedFrames - t >= 5) {
+            t = sdlHelper.elapsedFrames;
+            f += 1;
+            if (f > 3) {
+                f = 0;
+            }
+        }
 
         if (f == 0) {
-            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f2);
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, stickman[1]);
         } else if (f == 1) {
-            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f3);
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, stickman[2]);
         } else if (f == 2) {
-            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f4);
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, stickman[3]);
         } else if (f == 3) {
-            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f3);
+            sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, stickman[2]);
         }
     } else {
-        t = 0;
-        sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, f1);
+        t = elapsedFrames;
+        sdlHelper.renderImageEx(x, y, 200, 200, flip, 0, 0, 0, stickman[0]);
     }
 
     sdlHelper.renderImage(ex, ey, 100, 100, et);
-    sdlHelper.drawText(95, 95, 100, "Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", 0, 0, 0, 30);
-    sdlHelper.drawText(100, 100, 100, "Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", tc ? 0 : 255, 100, tc ? 255 : 100, 255);
+    sdlHelper.drawText(95, 95, 100, "assets/Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", 0, 0, 0, 30);
+    sdlHelper.drawText(100, 100, 100, "assets/Roboto/Roboto-Regular.ttf", "This is an example game for SDL-HELPER!!!", tc ? 0 : 255, 100, tc ? 255 : 100, 255);
     sdlHelper.fillRect(mx - 10, my - 10, 20, 20, 0, 0, 0, 255);
     sdlHelper.render();
 }
@@ -140,10 +136,10 @@ int main() {
     sdlHelper.start();
     sdlHelper.icon = sdlHelper.loadImageToSurface("assets/image.png");
     et = sdlHelper.loadImage("assets/image.png");
-    f1 = sdlHelper.loadImage("assets/stickman/frame-1.png");
-    f2 = sdlHelper.loadImage("assets/stickman/frame-2.png");
-    f3 = sdlHelper.loadImage("assets/stickman/frame-3.png");
-    f4 = sdlHelper.loadImage("assets/stickman/frame-4.png");
+    stickman[0] = sdlHelper.loadImage("assets/stickman/frame-1.png");
+    stickman[1] = sdlHelper.loadImage("assets/stickman/frame-2.png");
+    stickman[2] = sdlHelper.loadImage("assets/stickman/frame-3.png");
+    stickman[3] = sdlHelper.loadImage("assets/stickman/frame-4.png");
     sdlHelper.updateIcon();
     sdlHelper.updateLoop();
 

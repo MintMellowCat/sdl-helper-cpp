@@ -29,6 +29,8 @@ public:
     Uint32 frametime;
     SDL_Event event;
     int poll;
+    int elapsedFrames = 0;
+    int elapsedTime = 0;
     bool running = true;
     bool showCursor = true;
     bool pKeysPressed[512];
@@ -58,6 +60,8 @@ public:
             update();
             audioUpdateThread = std::thread(audioUpdate);
             audioUpdateThread.detach();
+            elapsedFrames++;
+            elapsedTime = elapsedFrames / 0.06;
         }
     }
 
