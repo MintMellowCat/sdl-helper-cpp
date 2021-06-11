@@ -31,18 +31,22 @@ public:
     int poll;
     int elapsedFrames = 0;
     int elapsedTime = 0;
+    int windowWidth = 1000;
+    int windowHeight = 700;
     bool running = true;
+    bool fullScreen = true; //Is fullscreen
     bool showCursor = true;
     bool pKeysPressed[512];
     bool keysPressed[512];
     bool pMousesPressed[512];
     bool mousesPressed[512];
+    std::string windowName = "Window Title";
     SDL_Surface* icon;
 
     void start() {
         ttfBuffer = NULL;
 
-        window = SDL_CreateWindow("Game Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN); //Display window
+        window = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN); //Display window
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); //Create renderer
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -66,9 +70,6 @@ public:
     }
 
     void readEvents() {
-        static bool fullScreen = true; //Is fullscreen
-        static int windowWidth = 1000;  //Get window width
-        static int windowHeight = 700; //Get window height
         static int screenWidth = 1920;
         static int screenHeight = 1080;
 
@@ -133,6 +134,24 @@ public:
 
         while (SDL_PollEvent(&event)) {
             readEvents();
+        }
+    }
+
+    void updateFullscreen() {
+        static int screenWidth = 1920;
+        static int screenHeight = 1080;
+
+        if (!fullScreen) {
+            SDL_SetWindowFullscreen(window, 0);
+            SDL_RestoreWindow(window);
+            SDL_SetWindowSize(window, windowWidth, windowHeight);
+            SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED); //Toggle fullscreen off
+        }
+        else {
+            SDL_SetWindowSize(window, 1920, 1080);
+            SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN); //Toggle fullscreen on
+
+            SDL_GetWindowSize(window, &screenWidth, &screenHeight);
         }
     }
 
