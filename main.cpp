@@ -90,8 +90,6 @@ void SDL_helper::update() {
         ey = 1080 - 95;
     }
 
-    std::cout << elapsedTime << "\n";
-
     if (m && gs == 0 && y >= 1080 - 180) {
         if (sdlHelper.elapsedFrames - t >= 5) {
             t = sdlHelper.elapsedFrames;

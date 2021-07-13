@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#define PI 3.141592643589793
+
 static Uint8* audioPos;
 static Uint32 audioLen;
 std::thread audioThread;
@@ -273,6 +275,44 @@ public:
 
         for (int i = 0; i < quality + 1; i++) {
             drawPoint(((dx / quality) * i) + x1, ((dy / quality) * i) + y1, t, r, g, b, a);
+        }
+    }
+
+    void drawCircle(int x, int y, int ra, int t, int s, int r, int g, int b, int a) {
+        int q = 1;
+        float angle = 0;
+        int x1, y1;
+        int x2 = ra, y2 = 0;
+
+        for (int i = 0; i < s; i++) {
+            angle += 360 / float(s);
+            x1 = x2;
+            y1 = y2;
+
+            if (angle >= 90 && angle < 180) {
+                q = 2;
+            }
+            if (angle >= 180 && angle < 270) {
+                q = 3;
+            }
+            if (angle >= 270) {
+                q = 4;
+            }
+            if (q == 1) {
+                x2 = ra * cos(angle * (PI / 180));
+                y2 = -(ra * sin(angle * (PI / 180)));
+            } else if (q == 2) {
+                x2 = -(ra * sin((angle - 90) * (PI / 180)));
+                y2 = -(ra * cos((angle - 90) * (PI / 180)));
+            } else if (q == 3) {
+                x2 = -(ra * cos((angle - 180) * (PI / 180)));
+                y2 = ra * sin((angle - 180) * (PI / 180));
+            } else if (q == 4) {
+                x2 = ra * sin((angle - 270) * (PI / 180));
+                y2 = ra * cos((angle - 270) * (PI / 180));
+            }
+
+            drawLine(x1 + x, y1 + y, x2 + x, y2 + y, t, r, g, b, a);
         }
     }
 
